@@ -1,4 +1,4 @@
-# DevAssist: Online Education Platform (MERN)
+# DevAssist: Online Education Platform
 
 ## 🎓 Introduction
 DevAssist aims to provide a seamless and interactive learning experience for students, making education more accessible and engaging. Additionally, the platform serves as a hub for instructors to showcase their expertise and connect with learners across the globe.
@@ -51,7 +51,6 @@ Built with **NodeJS**, **ExpressJS**, and **MongoDB** (via Mongoose).
 - **Student:** name, email, password, enrolledCourses.
 - **Instructor:** name, email, password, createdCourses.
 - **Course:** title, description, instructorRef, mediaURLs, ratings.
-- 
 ---
 
 

@@ -43,7 +43,6 @@ Built with **NodeJS**, **ExpressJS**, and **MongoDB** (via Mongoose).
 ### Core Features
 - **User Auth & Authz:** JWT, OTP verification, forgot-password flows.
 - **Course Management:** CRUD operations, media uploads to Cloudinary.
-- **Payments:** Integrated **Razorpay** checkout.
 - **Markdown Support:** Store and render content in Markdown format.
 - **Media Management:** Cloudinary for images, videos, and docs.
 

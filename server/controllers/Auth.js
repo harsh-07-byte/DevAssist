@@ -6,12 +6,7 @@ const Profile = require("../models/Profile");
 const jwt = require('jsonwebtoken');
 const mailSender = require('../utils/mailSender');
 require("dotenv").config();
-
 const { passwordUpdated } = require("../mail/templates/passwordUpdate");
-
-
-
-
 exports.sendotp = async (req, res) => {
 
     try {
@@ -19,8 +14,6 @@ exports.sendotp = async (req, res) => {
         const { email } = req.body;
 
         const checkUserIsPresent = await User.findOne({ email });
-
-
 
         if (checkUserIsPresent) {
 
@@ -32,14 +25,12 @@ exports.sendotp = async (req, res) => {
             })
         }
 
-
         var otp = otpGenerator.generate(6, {
             upperCaseAlphabets: false,
             lowerCaseAlphabets: false,
             specialChars: false,
         });
         console.log("OTP is generated : ", otp);
-
 
         let result = await OTP.findOne({ otp: otp });
 
@@ -53,7 +44,6 @@ exports.sendotp = async (req, res) => {
             result = await OTP.findOne({ otp: otp });
         }
 
-
         const otpPayload = { email, otp };
 
         const otpBody = await OTP.create(otpPayload);
@@ -61,7 +51,6 @@ exports.sendotp = async (req, res) => {
         console.log("Database entry for OTP:", otpBody);
 
         console.log(otpBody);
-
 
         return res.status(200).json({
 
@@ -81,7 +70,6 @@ exports.sendotp = async (req, res) => {
         })
     }
 };
-
 
 exports.signup = async (req, res) => {
     try {
@@ -106,8 +94,6 @@ exports.signup = async (req, res) => {
             })
         }
 
-
-    
         if (password !== confirmPassword) {
             return res.status(400).json({
                 success: false,
@@ -115,7 +101,6 @@ exports.signup = async (req, res) => {
             })
         }
         
-
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({
@@ -124,12 +109,8 @@ exports.signup = async (req, res) => {
             })
         }
 
-
-
         const mostRecentOtp = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
         console.log(mostRecentOtp);
-        
-
         
         if (mostRecentOtp.length == 0) {
             
@@ -146,12 +127,7 @@ exports.signup = async (req, res) => {
             })
         }
 
-     
         const hashedPassword = await bcrypt.hash(password, 10);
-
-
-   
-
 
         const profileDetails = await Profile.create({
             gender: null,
@@ -172,13 +148,13 @@ exports.signup = async (req, res) => {
 
         });
 
-        
         return res.status(200).json({
             success: true,
             message: "User has signed up successfully",
             user,
         })
     }
+
     catch (err) {
         console.log(err);
         return res.status(500).json({
@@ -188,22 +164,17 @@ exports.signup = async (req, res) => {
     }
 }
 
-
-
 exports.login = async (req, res) => {
     try {
        
         const { email, password } = req.body;
         
-
         if (!email || !password) {
             return res.status(403).json({
                 success: false,
                 message: "You need to fill all the fields, please try again",
             })
         }
-
-       
 
         const user = await User.findOne({ email }).populate("additionalDetails");
 
@@ -213,8 +184,6 @@ exports.login = async (req, res) => {
                 message: "User is not registered with this email, please sign up first",
             })
         }
-
-        
 
         if (await bcrypt.compare(password, user.password)) {
 
@@ -251,9 +220,8 @@ exports.login = async (req, res) => {
             })
         }
 
-
-
     }
+
     catch (error) {
         console.log(error);
         return res.status(500).json({
@@ -263,12 +231,7 @@ exports.login = async (req, res) => {
     }
 }
 
-
-
-
 exports.changePassword = async (req, res) => {
-
-
 
     try {
 
@@ -276,18 +239,17 @@ exports.changePassword = async (req, res) => {
 
         const { oldPassword, newPassword, confirmNewPassword } = req.body;
 
-       
         const isPasswordMatch = await bcrypt.compare(
             oldPassword,
             userDetails.password
         );
+
         if (!isPasswordMatch) {
 
             return res
                 .status(401)
                 .json({ success: false, message: "The password entered is incorrect, please try again" });
         }
-
 
         if (newPassword !== confirmNewPassword) {
 
@@ -297,7 +259,6 @@ exports.changePassword = async (req, res) => {
             });
         }
 
-       
         const encryptedPassword = await bcrypt.hash(newPassword, 10);
 
         const updatedUserDetails = await User.findByIdAndUpdate(
@@ -306,8 +267,6 @@ exports.changePassword = async (req, res) => {
             { new: true }
         );
 
-
-      
         try {
             const emailResponse = await mailSender(
                 updatedUserDetails.email,
@@ -317,7 +276,9 @@ exports.changePassword = async (req, res) => {
                 )
             );
             console.log("Email successfully sent:", emailResponse.response);
-        } catch (error) {
+        } 
+        
+        catch (error) {
 
             console.error("While sending mail error occurred", error);
             return res.status(500).json({
@@ -327,11 +288,12 @@ exports.changePassword = async (req, res) => {
             });
         }
 
-
         return res
             .status(200)
             .json({ success: true, message: "Your password has been updated successfully" });
-    } catch (error) {
+    } 
+    
+    catch (error) {
 
         console.error("Error while updating password:", error);
         return res.status(500).json({
@@ -340,6 +302,5 @@ exports.changePassword = async (req, res) => {
             error: error.message,
         });
     }
-
 
 }

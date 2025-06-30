@@ -1,7 +1,4 @@
-
 const mongoose = require("mongoose");
-const { resetPassword } = require("../controllers/ResetPassword");
-
 
 const userSchema = new mongoose.Schema(
 	{
@@ -36,11 +33,21 @@ const userSchema = new mongoose.Schema(
 			required: true,
 		},
 
+		active: {
+      	type: Boolean,
+      	default: true,
+    	},
+
 		additionalDetails: {
 			type: mongoose.Schema.Types.ObjectId,
 			required: true,
 			ref: "Profile",
 		},
+
+		approved: {
+      	type: Boolean,
+      	default: true,
+	 	},		
 
 		token: {
 			type: String,
@@ -68,7 +75,8 @@ const userSchema = new mongoose.Schema(
 				ref: "courseProgress",
 			},
 		],
-    }
+    },
+	{timestamps: true}
 );
 
 

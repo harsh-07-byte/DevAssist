@@ -1,5 +1,6 @@
 const mongoose=require('mongoose');
-
+const mailSender = require("../utils/mailSender");
+const emailTemplate = require("../mail/templates/emailVerificationTemplate");
 
 const OTPSchema=new mongoose.Schema({
 
@@ -16,14 +17,14 @@ const OTPSchema=new mongoose.Schema({
   createdAt:{
     type:Date,
     default:Date.now(),
-    expires:5*60,
+    expires:60*10,
   }
 });
 
 async function sendVerificationEmail(email,otp){
 
   try{
-    const mailResponse=await mailSender(email,"Verification email from DevAssist",  otp);
+    const mailResponse=await mailSender(email,"Verification email from DevAssist", emailTemplate(otp));
     console.log("Email has been sent successfully:",mailResponse);
 
   }
@@ -38,7 +39,10 @@ async function sendVerificationEmail(email,otp){
 
 OTPSchema.pre("save",async function(next){
 
-  await sendVerificationEmail(this.email,this.otp);
+	if (this.isNew) {
+		await sendVerificationEmail(this.email, this.otp);
+	}
+
   next();
   
 });

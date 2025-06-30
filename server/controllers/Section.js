@@ -1,12 +1,12 @@
 const Section = require("../models/Section");
 const Course = require("../models/Course");
-const SubSectionModal = require("../models/SubSection");
+const SubSection = require("../models/SubSection");
 
 exports.createSection = async (req, res) => {
 
     try {
 
-        const { sectionName, courseId } = req.body;
+        const { sectionName, sectionId, courseId } = req.body;
 
         if (!sectionName || !courseId) {
 
@@ -16,6 +16,16 @@ exports.createSection = async (req, res) => {
             })
 
         }
+
+        const ifcourse= await Course.findById(courseId);
+        
+		if (!ifcourse) {
+			return res.status(404).json({
+                success: false,
+                message: "Course not found",
+            });
+        }
+
 
         const newSection = await Section.create({ sectionName });
 
@@ -66,7 +76,7 @@ exports.updateSection = async (req, res) => {
 
     try {
 
-        const { sectionName, sectionId } = req.body;
+        const { sectionName, sectionId, courseId } = req.body;
 
         if (!sectionName || !sectionId) {
 
@@ -77,6 +87,12 @@ exports.updateSection = async (req, res) => {
 
         }
 
+        const section = await Section.findByIdAndUpdate(sectionId,
+
+        { sectionName: sectionName },
+
+        { new: true });
+
         const course = await Course.findById(courseId).populate({
             path: "courseContent",
             populate: {
@@ -84,19 +100,13 @@ exports.updateSection = async (req, res) => {
             }
         }).exec();
 
-        const section = await Section.findByIdAndUpdate(sectionId,
-
-            { sectionName: sectionName },
-
-            { new: true });
-
         return res.status(200).json({
             success: true,
             message: "Successfully updated section",
+            data: course,
         });
 
     }
-
 
     catch (error) {
 

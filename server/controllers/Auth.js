@@ -6,7 +6,8 @@ const Profile = require("../models/Profile");
 const jwt = require('jsonwebtoken');
 const mailSender = require('../utils/mailSender');
 require("dotenv").config();
-const { passwordUpdated } = require("../mail/templates/passwordUpdate");
+const { passwordUpdated } = require("../mail/passwordUpdate");
+
 exports.sendotp = async (req, res) => {
 
     try {
@@ -32,11 +33,11 @@ exports.sendotp = async (req, res) => {
         });
         console.log("OTP is generated : ", otp);
 
-        let result = await OTP.findOne({ otp: otp });
+        const result = await OTP.findOne({ otp: otp });
 
         while (result) {
 
-            otp = otpGenerator(6, {
+            otp = otpGenerator.generate(6, {
                 upperCaseAlphabets: false,
                 lowerCaseAlphabets: false,
                 specialChars: false,
@@ -73,7 +74,7 @@ exports.sendotp = async (req, res) => {
 
 exports.signup = async (req, res) => {
     try {
-        
+
         const {
             firstName,
             lastName,
@@ -85,7 +86,7 @@ exports.signup = async (req, res) => {
             otp,
         } = req.body
 
-        
+
         if (!firstName || !lastName || !email || !password || !confirmPassword
             || !otp) {
             return res.status(403).json({
@@ -100,7 +101,7 @@ exports.signup = async (req, res) => {
                 message: "Both passwords should be same, please try again",
             })
         }
-        
+
         const existingUser = await User.findOne({ email });
         if (existingUser) {
             return res.status(400).json({
@@ -111,16 +112,16 @@ exports.signup = async (req, res) => {
 
         const mostRecentOtp = await OTP.find({ email }).sort({ createdAt: -1 }).limit(1);
         console.log(mostRecentOtp);
-        
+
         if (mostRecentOtp.length == 0) {
-            
+
             return res.status(400).json({
                 success: false,
                 message: "OTP is not found",
             })
         }
 
-        else if (otp !== mostRecentOtp.otp) {
+        else if (otp !== mostRecentOtp[0].otp) {
             return res.status(400).json({
                 success: false,
                 message: "The OTP is invalid",
@@ -128,6 +129,9 @@ exports.signup = async (req, res) => {
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
+
+        let approved = ""
+        approved === "Instructor" ? (approved = false) : (approved = true)
 
         const profileDetails = await Profile.create({
             gender: null,
@@ -140,7 +144,8 @@ exports.signup = async (req, res) => {
             firstName,
             lastName,
             email,
-            accountType,
+            accountType: accountType,
+            approved: approved,
             contactNumber,
             password: hashedPassword,
             additionalDetails: profileDetails._id,
@@ -166,15 +171,15 @@ exports.signup = async (req, res) => {
 
 exports.login = async (req, res) => {
     try {
-       
+
         const { email, password } = req.body;
-        
+
         if (!email || !password) {
             return res.status(403).json({
                 success: false,
                 message: "You need to fill all the fields, please try again",
             })
-        }
+        }   
 
         const user = await User.findOne({ email }).populate("additionalDetails");
 
@@ -191,17 +196,18 @@ exports.login = async (req, res) => {
                 email: user.email,
                 id: user._id,
                 accountType: user.accountType,
+                role: user.role,
             }
 
             const token = jwt.sign(payload, process.env.JWT_SECRET, {
                 expiresIn: "12h",
             })
+
             user.token = token;
             user.password = undefined;
 
-            
             const options = {
-                expires: new Date(Date.now() + 24 * 60 * 60 * 1000),
+                expires: new Date(Date.now() + 12 * 60 * 60 * 1000),
                 httpOnly: true,
             }
 
@@ -276,8 +282,8 @@ exports.changePassword = async (req, res) => {
                 )
             );
             console.log("Email successfully sent:", emailResponse.response);
-        } 
-        
+        }
+
         catch (error) {
 
             console.error("While sending mail error occurred", error);
@@ -291,8 +297,8 @@ exports.changePassword = async (req, res) => {
         return res
             .status(200)
             .json({ success: true, message: "Your password has been updated successfully" });
-    } 
-    
+    }
+
     catch (error) {
 
         console.error("Error while updating password:", error);

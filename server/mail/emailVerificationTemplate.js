@@ -67,7 +67,7 @@ const otpTemplate = (otp) => {
 	<body>
 		<div class="container">
 			<a href="http://localhost:3000"><img class="logo"
-					src="" alt="DevAssist Logo"></a>
+					src="https://i.postimg.cc/3RbZ65NW/9643e65b-97e5-461c-a9f2-2734319f6d13.png" alt="DevAssist Logo"></a>
 			<div class="message">Email For OTP Verification</div>
 			<div class="body">
 				<p>Dear User,</p>

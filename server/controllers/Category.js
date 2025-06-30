@@ -70,6 +70,7 @@ exports.categoryPageDetails = async (req, res) => {
 
             .populate({
                 path: "courses",
+                match: { status: "Published" },
                 populate: "ratingAndReviews",
             })
 
@@ -92,50 +93,56 @@ exports.categoryPageDetails = async (req, res) => {
             })
         }
 
-        const differentCategories = await Category.find({
-            _id: { $ne: categoryId },
-        })
-         .populate({
-                path: "courses",
-        })
-        .exec()
+        const categoriesExceptTheOneSelected = await Category.find({
 
-        const allCategories = await Category.find()
+                _id: { $ne: categoryId },
 
-            .populate({
+            })
+
+            let differentCategories = await Category.findOne(
+                categoriesExceptTheOneSelected[getRandomInt(categoriesExceptTheOneSelected.length)]
+                ._id
+            )
+                .populate({
                 path: "courses",
+                match: { status: "Published" },
+                })
+                .exec()
+
+            const allCategories = await Category.find()
+                .populate({
+                path: "courses",
+                match: { status: "Published" },
                 populate: {
                     path: "instructor",
                 },
-            })
+                })
+                .exec()
 
-            .exec()
+            const allCourses = allCategories.flatMap((category) => category.courses)
 
-        const allCourses = allCategories.flatMap((category) => category.courses)
+            const topSellingCourses = allCourses
+                .sort((a, b) => b.sold - a.sold)
+                .slice(0, 10)
+            
 
-        const mostSellingCourses = allCourses
-
-            .sort((a, b) => b.sold - a.sold)
-            .slice(0, 10)
-     
-        res.status(200).json({
-
-            success: true,
-            data: {
+            res.status(200).json({
+                success: true,
+                data: {
                 selectedCategory,
                 differentCategories,
-                mostSellingCourses,
-            },
+                topSellingCourses,
+                },
+            })
+            } 
             
-        })
-    } 
-    
-    catch (error) {
+            catch (error) {
+                
+            return res.status(500).json({
+                success: false,
+                message: "Internal server error",
+                error: error.message,
+            })
 
-        return res.status(500).json({
-            success: false,
-            message: error.message,
-        })
-
-    }
-}
+            }
+        }

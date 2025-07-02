@@ -24,9 +24,7 @@ exports.updateProfile = async (req, res) => {
     const user = await User.findByIdAndUpdate(id, {
       firstName,
       lastName,
-    })
-
-    await user.save()
+    }, { new: true });
 
     profileDetails.dateOfBirth = dateOfBirth;
 
@@ -81,7 +79,7 @@ exports.deleteAccount = async (req, res) => {
 
     //remove student from enrolled 
 
-    for (const courseId of user.courses) {
+    for (const courseId of userDetails.courses) {
       await Course.findByIdAndUpdate(
         courseId,
         { $pull: { studentsEnrolled: id } },
@@ -119,11 +117,10 @@ exports.getAllUserDetails = async (req, res) => {
     const id = req.user.id;
 
     const userDetails = await User.findById(id).populate("additionalDetails").exec();
-
     return res.status(200).json({
       success: true,
       message: "Successfully fetched user details",
-      userDetails
+      data: userDetails,
     });
 
   }

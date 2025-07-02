@@ -37,10 +37,8 @@ exports.sendotp = async (req, res) => {
 
         while (result) {
 
-            otp = otpGenerator.generate(6, {
+            otp = otpGenerator.generator(6, {
                 upperCaseAlphabets: false,
-                lowerCaseAlphabets: false,
-                specialChars: false,
             })
             result = await OTP.findOne({ otp: otp });
         }
@@ -196,7 +194,6 @@ exports.login = async (req, res) => {
                 email: user.email,
                 id: user._id,
                 accountType: user.accountType,
-                role: user.role,
             }
 
             const token = jwt.sign(payload, process.env.JWT_SECRET, {

@@ -7,12 +7,12 @@ exports.createSubSection = async (req, res) => {
 
   try {
 
-    const { sectionId, title, description, courseId } = req.body
+    const { sectionId, title, description} = req.body
 
     const video = req.files.videoFile
 
 
-    if (!sectionId || !title || !description || !video ||!courseId) {
+    if (!sectionId || !title || !description || !video) {
 
       return res
         .status(404)
@@ -50,8 +50,6 @@ exports.createSubSection = async (req, res) => {
       { $push: { subSection: subSectionDetails._id } },
       { new: true }
     ).populate("subSection")
-
-    const updatedCourse = await Course.findById(courseId).populate({ path: "courseContent", populate: { path: "subSection" } }).exec();
 
     console.log("Updated Section Details:", updatedSection)
 

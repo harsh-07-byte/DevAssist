@@ -86,7 +86,7 @@ exports.resetPassword = async (req, res) => {
 
         }
 
-        if (userDetails.resetPasswordExpires > Date.now()) {
+        if (userDetails.resetPasswordExpires < Date.now()) {
 
             return res.json({
                 success: false,

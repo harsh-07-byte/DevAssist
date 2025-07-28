@@ -55,7 +55,7 @@ exports.passwordUpdated = (email, name) => {
     
     <body>
         <div class="container">
-            <a href="http://localhost:3000"><img class="logo"
+            <a href="https://dev-assist-indol.vercel.app"><img class="logo"
                     src="https://i.ibb.co/R4YfCzWP/Logo-Full-Light.png" alt="DevAssist Logo"></a>
             <div class="message">Password Update Confirmation</div>
             <div class="body">

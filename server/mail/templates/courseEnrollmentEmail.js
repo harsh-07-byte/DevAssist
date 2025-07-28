@@ -67,7 +67,7 @@ exports.courseEnrollmentEmail = (courseName, name) => {
     
     <body>
         <div class="container">
-            <a href="http://localhost:3000"><img class="logo" src="<a href="https://imgbb.com/"><img src="https://i.ibb.co/R4YfCzWP/Logo-Full-Light.png" alt="Logo-Full-Light" border="0"></a>"
+            <a href="https://dev-assist-indol.vercel.app"><img class="logo" src="<a href="https://imgbb.com/"><img src="https://i.ibb.co/R4YfCzWP/Logo-Full-Light.png" alt="Logo-Full-Light" border="0"></a>"
                     alt="DevAssist Logo"></a>
             <div class="message">Confirmation of Course Registration</div>
             <div class="body">
@@ -76,7 +76,7 @@ exports.courseEnrollmentEmail = (courseName, name) => {
                     are extremely pleased to have you as one of our students</p>
                 <p>To access the study material, lectures, etc. please login and start your learning journey
                 </p>
-                <a class="cta" href="http://localhost:3000/dashboard"> Go to Dashboard </a>
+                <a class="cta" href="https://dev-assist-indol.vercel.app/dashboard"> Go to Dashboard </a>
             </div>
             <div class="support">If you need any help or if you have any question you can contact us at <a
                     href="mailto:DevAssistHelp@DevAssist.com">DevAssistHelp@DevAssist.com</a>. We will help you</div>

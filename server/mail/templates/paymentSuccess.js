@@ -67,7 +67,7 @@ exports.paymentSuccess = (amount, paymentId, orderId, name,lastname) => {
     
     <body>
         <div class="container">
-            <a href="http://localhost:3000"><img class="logo" src="https://i.ibb.co/R4YfCzWP/Logo-Full-Light.png"
+            <a href="https://dev-assist-indol.vercel.app"><img class="logo" src="https://i.ibb.co/R4YfCzWP/Logo-Full-Light.png"
                     alt="DevAssist Logo"></a>
             <div class="message">
             We have successfully received your payment of ₹${amount}
